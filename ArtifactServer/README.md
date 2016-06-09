@@ -5,7 +5,7 @@ Assumption artifact server address is `artifacts.supernet.org`
 Step 1. Install nginx server
 `sudo apt-get install nginx -y`
 
-Step 2. Copy `default` from this repo to `/etc/nginx/sites-available/`
+Step 2. Copy `default` file from this repo to `/etc/nginx/sites-available/`
 `sudo cp default /etc/nginx/sites-available`
 
 Step 3. Install letsencrypt 
