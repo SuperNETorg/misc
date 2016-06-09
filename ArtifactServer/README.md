@@ -28,7 +28,7 @@ Step 5. Reload NGINX configs
 
 `sudo service nginx reload`
 
-if all above steps are executed without any problem then artifact server should start without any problem.
+if all above steps execute without any problem then artifact server will start.
 
 Location where all files reside is /usr/share/nginx/html/
 Make sure to copy all artefacts to this location
