@@ -30,5 +30,4 @@ Step 5. Reload NGINX configs
 
 if all above steps execute without any problem then artifact server will start.
 
-Location where all files reside is /usr/share/nginx/html/
-Make sure to copy all artifacts to this location
+Location where all files reside is /usr/share/nginx/html/ make sure to copy all artifacts to this location
