@@ -31,11 +31,13 @@ rm $1.sync.log >/dev/null
 MINCONFIRMS=$(cat coins/gen$COINLC.json | python3 -c "import sys, json; print(json.load(sys.stdin)['minconfirms'])")
 if [ -z "$MINCONFIRMS" ]; then
     if [[ "${COINLC}" == "btc" ]]; then
-        $MINCONFIRMS=3
+        MINCONFIRMS=3
     else
-        $MINCONFIRMS=10
+        MINCONFIRMS=10
     fi
 fi
+
+echo $MINCONFIRMS
 
 SECONDS=0
 STARTTIME=$(date +%T)
@@ -65,5 +67,7 @@ while sleep .5; do
 	exit 0
     fi
 done
+
+kill -9 $CURPID
 
 exit $?
