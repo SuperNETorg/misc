@@ -8,9 +8,11 @@ HEIGHT=""
 SUPPORTED=(BTC BTCD DOGE LTC DGB GMC SYS MZC UNO ZET BTM CARB ANC FRK)
 RESULTS=kickstart.log
 COINLC=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+CURPROC=$(echo "../agents/iguana coins/gen$COINLC.json")
+CURPID=$(pidof $CURPROC)
 
 if [[ " ${SUPPORTED[@]} " =~ " $1 " ]]; then
-    ps ax | grep -q "[i]guana coins/gen$COINLC.json" && { echo "Synchronization for $1 is already running! If you want to restart it, stop it and try again."; exit 1; }
+    ps ax | grep -q "[i]guana coins/gen$COINLC.json" && { echo "Synchronization for $1 was already running! Stopping current process and restarting"; kill -9 $CURPID; }
     echo Starting $1 Synchronization.
 else
     echo ">>> Argument error. Please run ./kickstart COIN"
