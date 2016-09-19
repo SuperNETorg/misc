@@ -12,7 +12,7 @@ CURPROC=$(echo "../agents/iguana coins/gen$COINLC.json")
 CURPID=$(pidof $CURPROC)
 
 if [[ " ${SUPPORTED[@]} " =~ " $1 " ]]; then
-    ps ax | grep -q "[i]guana coins/gen$COINLC.json" && { echo "Synchronization for $1 was already running! Stopping current process and restarting"; kill -9 $CURPID; }
+    ps ax | grep -q "[i]guana coins/gen$COINLC.json" && { echo "Synchronization for $1 was already running! Stopping current process and restarting"; kill -9 $CURPID; sleep 1; }
     echo Starting $1 Synchronization.
 else
     echo ">>> Argument error. Please run ./kickstart COIN"
@@ -43,27 +43,25 @@ echo " >>> $1 Monitored Synchronization started at $STARTTIME." >> debug.log
 echo " >>> Synchronization started at $STARTTIME."
 echo " >>> You can follow this synchronization log at $1.sync.log. $1 status lines will also appear in debug.log"
 echo " >>> Monitoring the log. Leave this process open to get a report in $RESULTS when $1 is fully synchronized."
-echo "$1 synchronization started at $STARTTIME" >> $RESULTS
-while sleep .5; do 
+echo "$1 synchronization started at $STARTTIME" | tee -a $RESULTS
+
+while sleep .5; do
     ENDTIME=$(date +%T)
     ps ax | grep "[a]gents/iguana coins/gen$COINLC.json" >/dev/null || { echo -e "\n$1 Synchronization process exited before finishing. Check $1.sync.log for details.\n"; echo "$1 synchronization finished prematurely at $ENDTIME" >> $RESULTS; echo "--------------------------------------------------------" >> $RESULTS; exit 1; }
     LASTLINE=$(tac debug.log |egrep -m 1 .)
-    printf 'Time elapsed: %s minutes and %02d%s seconds                               \r' "$(($SECONDS / 60))" "$((SECONDS % 60))"
-	if [[ "${LASTLINE}" -ne "${1}.RT"* ]]; then
+    if [[ "${LASTLINE}" != "${1}.RT"* ]]; then
             LASTLINE="$1.RT0 u.0+c.0 b.0 v.0 (0+0/1 1st.0).s0 to 1 N[1] h.0 r.0 c.0"
-	fi
+    fi
     RTNUMBERPR=${LASTLINE% u.*}
     RTNUMBER=${RTNUMBERPR##*RT}
     HEIGHTPR=${LASTLINE% r.*}
     HEIGHT=${HEIGHTPR##*] h.}
     if [[ "$((RTNUMBER + MINCONFIRMS))" == "$((HEIGHT))" ]]; then
-	echo; echo; echo; echo " $1 synchronization finished at $ENDTIME"
-	echo " Total synchronization time: $((SECONDS / 3600)) hours, $((($SECONDS % 3600) / 60)) minutes and $((SECONDS % 60)) seconds."
-	echo "$1 synchronization ended at $ENDTIME" >> $RESULTS
-	echo "Total time: $((SECONDS / 3600)) hours, $((($SECONDS % 3600) / 60)) minutes and $((SECONDS % 60)) seconds" >> $RESULTS
+	echo " $1 synchronization finished at $ENDTIME" | tee -a $RESULTS
+	echo "Total time: $((SECONDS / 3600)) hours, $((($SECONDS % 3600) / 60)) minutes and $((SECONDS % 60)) seconds" | tee -a $RESULTS
 	COMMIT=$(git rev-parse HEAD)
-	echo "Running commit: $COMMIT" >> $RESULTS
-	echo "--------------------------------------------------------" >> $RESULTS
+	echo "Running commit: $COMMIT" | tee -a $RESULTS
+	echo "--------------------------------------------------------" | tee -a $RESULTS
 	exit 0
     fi
 done
