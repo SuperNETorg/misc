@@ -12,7 +12,7 @@ CURPROC=$(echo "../agents/iguana coins/gen$COINLC.json")
 CURPID=$(pidof $CURPROC)
 
 if [[ " ${SUPPORTED[@]} " =~ " $1 " ]]; then
-    ps ax | grep -q "[i]guana coins/gen$COINLC.json" && { echo "Synchronization for $1 was already running! Stopping current process and restarting"; kill -9 $CURPID; }
+    ps ax | grep -q "[i]guana coins/gen$COINLC.json" && { echo "Synchronization for $1 was already running! Please stop it and try again if you want to proceed"; exit 1; }
     echo Starting $1 Synchronization.
 else
     echo ">>> Argument error. Please run ./kickstart COIN"
@@ -21,10 +21,10 @@ else
 fi
 
 echo WARNING: This will remove any existing DB and tmp sub-folders for $1 under the current working directory.
-#read -p " >>> Start synchronization from scratch ? (y/n) " -n 1 -r
-#if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-#    echo; exit 1
-#fi
+read -p " >>> Start synchronization from scratch ? (y/n) " -n 1 -r
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo; exit 1
+fi
 
 echo
 rm -rf tmp/$1 DB/$1 DB/purgeable/$1 >/dev/null
@@ -35,9 +35,9 @@ rm $1.sync.log >/dev/null
 MINCONFIRMS=$(cat coins/gen$COINLC.json | python3 -c "import sys, json; print(json.load(sys.stdin)['minconfirms'])")
 if [ -z "$MINCONFIRMS" ]; then
     if [[ "${COINLC}" == "btc" ]]; then
-        $MINCONFIRMS=3
+        MINCONFIRMS=3
     else
-        $MINCONFIRMS=10
+        MINCONFIRMS=10
     fi
 fi
 
@@ -56,7 +56,7 @@ while sleep .5; do
 	if [[ "${LASTLINE}" == "${1}.RT"* ]]; then
             printf '\n Last %s status line: %s \r\033[2A' "$1" "$LASTLINE"
 	else
-            LASTLINE="COIN.RT0 u.0+c.0 b.0 v.0 (0+0/1 1st.0).s0 to 1 N[1] h.0 r.0 c.0"
+            LASTLINE="$1.RT0 u.0+c.0 b.0 v.0 (0+0/1 1st.0).s0 to 1 N[1] h.0 r.0 c.0"
 	fi
     RTNUMBERPR=${LASTLINE% u.*}
     RTNUMBER=${RTNUMBERPR##*RT}
@@ -70,8 +70,17 @@ while sleep .5; do
 	COMMIT=$(git rev-parse HEAD)
 	echo "Running commit: $COMMIT" >> $RESULTS
 	echo "--------------------------------------------------------" >> $RESULTS
-	exit 0
+	echo; read -p " >>> Stop $1 Iguana process and remove generated data ? (y/n) " -n 1 -r
+	if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        	echo "Leaving $1 Iguana process running and preserving $1 DB and tmp data."; exit 0;
+    	else
+        	echo "Stopping $1 Iguana process and removing $1 DB and tmp data."
+        	kill -9 $CURPID
+        	rm -rf tmp/$1 DB/$1 DB/purgeable/$1 >/dev/null
+        	exit 0;
+	fi
     fi
 done
 
 exit $?
+
