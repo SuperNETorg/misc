@@ -37,8 +37,6 @@ if [ -z "$MINCONFIRMS" ]; then
     fi
 fi
 
-echo $MINCONFIRMS
-
 SECONDS=0
 STARTTIME=$(date +%T)
 echo " >>> $1 Monitored Synchronization started at $STARTTIME." >> debug.log
