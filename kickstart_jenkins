@@ -67,5 +67,6 @@ while sleep .5; do
 done
 
 kill -9 $CURPID
+rm -rf tmp/$1 DB/$1 DB/purgeable/$1 >/dev/null
 
 exit $?
