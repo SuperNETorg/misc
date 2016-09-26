@@ -2,7 +2,6 @@
 
 # Iguana Coin Synchronization Tool
 # Usage: ./kickstart COIN
-# Unattended version
 
 RTNUMBER=""
 HEIGHT=""

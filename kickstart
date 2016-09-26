@@ -2,6 +2,7 @@
 
 # Iguana Coin Synchronization Tool
 # Usage: ./kickstart COIN
+# Manual operator attended version
 
 RTNUMBER=""
 HEIGHT=""
@@ -75,7 +76,7 @@ while sleep .5; do
         	echo "Leaving $1 Iguana process running and preserving $1 DB and tmp data."; exit 0;
     	else
         	echo "Stopping $1 Iguana process and removing $1 DB and tmp data."
-        	kill -9 $CURPID
+        	kill $CURPID; sleep 1
         	rm -rf tmp/$1 DB/$1 DB/purgeable/$1 >/dev/null
         	exit 0;
 	fi
