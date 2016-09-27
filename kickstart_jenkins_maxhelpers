@@ -11,6 +11,7 @@ RESULTS=kickstart.log
 COINLC=$(echo "$1" | tr '[:upper:]' '[:lower:]')
 CURPROC=$(echo "../agents/iguana coins/gen$COINLC.json")
 CURPID=$(pidof $CURPROC)
+COMMIT=$(git rev-parse HEAD)
 NUMCORES=$(grep -c ^processor /proc/cpuinfo)
 
 wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O jq; chmod +x jq
