@@ -13,6 +13,8 @@ CURPROC=$(echo "../agents/iguana coins/gen$COINLC.json")
 CURPID=$(pidof $CURPROC)
 NUMCORES=$(grep -c ^processor /proc/cpuinfo)
 
+wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O jq; chmod +x jq
+
 if [[ " ${SUPPORTED[@]} " =~ " $1 " ]]; then
     ps ax | grep -q "[i]guana coins/gen$COINLC.json" && { echo "Synchronization for $1 was already running! Stopping current process and restarting"; kill -9 $CURPID; sleep 1; }
     echo Starting $1 Synchronization.
@@ -23,8 +25,6 @@ else
 fi
 
 echo WARNING: This will remove any existing DB and tmp sub-folders for $1 under the current working directory.
-
-wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O jq; chmod +x jq
 
 cat coins/gen$COINLC.json | ./jq --argjson NH $NUMCORES '.numhelpers=$NH' > coins/gen$COINLC.maxhelpers.json
 
@@ -37,12 +37,14 @@ if [[ "${COINLC}" == "btc" ]]; then
 fi
 
 echo
-rm -rf tmp/$1 DB/$1 DB/purgeable/$1 >/dev/null
-rm $1.sync.log >/dev/null
-
-echo "Running parameters:"
+echo "Running commit $COMMIT"
+echo "Running parameters:" 
 cat coins/gen$COINLC.kick.json
 echo
+
+echo
+rm -rf tmp/$1 DB/$1 DB/purgeable/$1 >/dev/null
+rm $1.sync.log >/dev/null
 
 ../agents/iguana coins/gen$COINLC.kick.json > $1.sync.log 2>&1 &
 
