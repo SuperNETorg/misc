@@ -71,10 +71,11 @@ while sleep .5; do
     HEIGHT=${HEIGHTPR##*] h.}
     if [[ "$((RTNUMBER + MINCONFIRMS -1))" == "$((HEIGHT))" ]]; then
 	echo " $1 synchronization finished at $ENDTIME" | tee -a $RESULTS
-	echo "Total time: $((SECONDS / 3600)) hours, $((($SECONDS % 3600) / 60)) minutes and $((SECONDS % 60)) seconds" | tee -a $RESULTS
-	COMMIT=$(git rev-parse HEAD)
-	echo "Running commit: $COMMIT" | tee -a $RESULTS
-	echo "--------------------------------------------------------" | tee -a $RESULTS
+        echo "Total time: $((SECONDS / 3600)) hours, $((($SECONDS % 3600) / 60)) minutes and $((SECONDS % 60)) seconds" | tee -a $RESULTS
+        echo "Last status line: $LASTLINE" | tee -a $RESULTS
+        COMMIT=$(git rev-parse HEAD)
+        echo "Running commit: $COMMIT" | tee -a $RESULTS
+        echo "--------------------------------------------------------" | tee -a $RESULTS
 	exit 0
     fi
 done
