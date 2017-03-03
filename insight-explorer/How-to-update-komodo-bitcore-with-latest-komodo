@@ -1,0 +1,29 @@
+Steps to UPDATE komodo-bitcore testing branch with latest komodo beta version
+-----------------------------------------------------------------------------
+    1. Clone komodo-bitcore
+$ git clone https://github.com/SuperNETorg/komodo-bitcore.git
+Notice that now only komodo-bitcore is listed as remote repository.
+$ cd komodo-bitcore
+$ git remote -v
+origin  https://github.com/SuperNETorg/komodo-bitcore.git (fetch)
+origin  https://github.com/SuperNETorg/komodo-bitcore.git (push)
+    2. Add jl777 komodo as upstream repository
+$ git remote add upstream https://github.com/jl777/komodo.git
+    3. Verify new remote
+$ git remote -v
+origin  https://github.com/SuperNETorg/komodo-bitcore.git (fetch)
+origin  https://github.com/SuperNETorg/komodo-bitcore.git (push)
+upstream    https://github.com/jl777/komodo.git (fetch)
+upstream    https://github.com/jl777/komodo.git (push)
+    4. Fetch the upstream repository
+$ git fetch upstream
+Now komodo beta branch is stored in a local branch, upstream/beta. List all local and remote tracked branches to verify:
+$ git branch -va
+    5. Checkout the local branch where we want to merge the upstream changes
+$ git checkout testing
+    6. Merge the upstream/beta changes into the local branch
+$ git merge upstream/beta
+Note that, if the local branch has not received any commits since the last upstream merge, git will simply do a "fast forward". If there's been commits in the local branch since the last upstream merge, the previous command will open the unix default editor to enter the commit message for the merge, as default this will be "Merge remote-tracking branch 'upstream/beta' into testing".
+Save+exit the editor. You will see now the merge details in shell.
+    7. Push the changes to komodo-bitcore repo
+$ git push
